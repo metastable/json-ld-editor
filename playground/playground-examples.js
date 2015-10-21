@@ -188,4 +188,9 @@
     "published": "2015-01-25T12:34:56Z"
   }
 
+  // External gist to test
+   $.get("https://gist.githubusercontent.com/cristianvasquez/0f8b5b8c39b8d31c27c5/raw/32ff0b9bd9656fc5821846fb3ef915a59bdfa244/event.jsonld").done(function(data){
+     playground.examples["Test"] = JSON.parse(data);
+  })
+
 })(jQuery);

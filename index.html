@@ -9,7 +9,7 @@
     v: http://rdf.data-vocabulary.org/#"
   lang="en" >
   <head>
-    <title>JSON-LD - JSON for Linking Data</title>
+    <title>JSON-LD Playground</title>
 
     <!-- Meta Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,12 +17,295 @@
 
     <!-- Style Sheets -->
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="static/css/bootstrap/bootstrap-responsive.css">
-    <link rel="stylesheet" type="text/css" href="static/css/bootstrap/font-awesome.css">
-    <link rel="shortcut icon" href="favicon.ico" />
 
-    <!-- Script tags -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <!-- CodeMirror -->
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/g/bootstrap@2.3.1(css/bootstrap-responsive.min.css),codemirror@3.22.0(codemirror.css+addon/lint/lint.css+addon/hint/show-hint.css+theme/neat.css)">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/fontawesome/3.2.1/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="playground/playground.css">
+    <link rel="stylesheet" type="text/css" href="static/css/rdf-font/rdf-font.css">
+
+    <link rel="shortcut icon" href="favicon.ico" />
+  </head>
+
+  <body id="page-playground" onload="playground.init();">
+    <div class="navbar navbar-static-top">
+      <div class="navbar-inner">
+        <div class="row-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href=""><img src="images/json-ld-data-24.png" alt="JSON-LD logo"> JSON-LD</a>
+          <div class="nav-collapse">
+          <ul class="nav">
+            <li class="active">
+              <a href="playground"><span class="icon-beer"></span> Playground</a>
+            </li>
+            <!--<li>-->
+              <!--<a href="../learn.html"><span class="icon-book"></span> Documentation</a>-->
+            <!--</li>-->
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <br/>
+      <h2>JSON-LD Editor</h2>
+      <br/>
+      <p>Explain something...</p>
+      <br/>
+    </div>
+
+    <div class="loading hero">
+      <h1><i class="icon-spinner icon-spin icon-large"></i> Loading the Playground...
+    </div>
+    <div class="loaded hide">
+      <div class="container">
+        <div class="btn-group" data-toggle="buttons-radio">
+          <button class="btn disabled btn-primary">Examples:</button>
+          <button id="btn-person" class="btn button">
+            <i class="icon icon-user"></i>
+            <span>Person</span>
+          </button>
+          <button id="btn-event" class="btn button">
+            <i class="icon icon-calendar"></i>
+            <span>Event</span>
+          </button>
+          <button id="btn-place" class="btn button">
+            <i class="icon icon-map-marker"></i>
+            <span>Place</span>
+          </button>
+          <button id="btn-product" class="btn button">
+            <i class="icon icon-barcode"></i>
+            <span>Product</span>
+          </button>
+          <button id="btn-recipe" class="btn button">
+            <i class="icon icon-food"></i>
+            <span>Recipe</span>
+          </button>
+          <button id="btn-library" class="btn button">
+            <i class="icon icon-book"></i>
+            <span>Library</span>
+          </button>
+          <button id="btn-activity" class="btn button">
+            <i class="icon icon-comment"></i>
+            <span>Activity</span>
+          </button>
+
+          <button id="btn-test" class="btn button">
+            <i class="icon icon-comment"></i>
+            <span>Test</span>
+          </button>
+
+        </div>
+
+        <div class="pull-right">
+          <a class="btn hide" id="permalink">
+            <i class="icon icon-link"></i>
+            <span>Permalink</span>
+          </a>
+          <a class="btn" id="gist">
+            <i class="icon icon-github"></i>
+            <span>Gist</span>
+          </a>
+          <button class="btn popover-info" title="Keyboard shortcuts">
+            <i class="icon icon-keyboard"></i> Shortcuts
+          </button>
+          <div class="popover-info-content hide">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Autocomplete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><label class="label">@</label></td>
+                  <td>all of the <b>@</b> keywords</td>
+                </tr>
+                <tr>
+                  <td><label class="label">Ctrl+Space</label></td>
+                  <td>available keys in <b>@context</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="container" id="markup-container">
+          <div class="row">
+            <div id="markup-div" class="span12">
+              <div class="pull-right editor-options">
+                <div class="input-prepend editor-option" title="Use remote document" data-editor="markup">
+                  <button class="btn" type="button" data-toggle="button">
+                    <span class="icon-stack">
+                      <i class="icon-cloud icon-stack-base icon-muted"></i>
+                      <i class="icon-file"></i>
+                    </span>
+                  </button>
+                  <input class="span2" type="text" placeholder="Document URL"/>
+                </div>
+              </div>
+              <h3>JSON-LD Input</h3>
+              <textarea id="markup" class="compressed process span6 codemirror-input"
+              placeholder="Enter your JSON-LD markup here..." rows="10"></textarea>
+            </div>
+
+            <div id="context-div" class="span6">
+              <div class="pull-right editor-options">
+                <div class="input-prepend editor-option" title="Use remote context" data-editor="context">
+                  <button class="btn" type="button" data-toggle="button">
+                    <span class="icon-stack">
+                      <i class="icon-cloud icon-stack-base icon-muted"></i>
+                      <i class="icon-bullseye"></i>
+                    </span>
+                  </button>
+                  <input class="span2" type="text" placeholder="Context URL"/>
+                </div>
+              </div>
+              <h3>New JSON-LD Context</h3>
+              <button class="btn" data-toggle="button" id="copy-context" title='Copy context from "JSON-LD Input"'>
+                <i class="icon-circle-arrow-right"></i>
+              </button>
+
+              <textarea id="context" class="compressed process span6 codemirror-input"
+              placeholder="Enter the new JSON-LD context to compact to here..." rows="10">{}</textarea>
+            </div>
+
+            <div id="frame-div" class="span6">
+              <h3>
+                JSON-LD Frame
+                <div class="pull-right editor-options">
+                  <div class="input-prepend editor-option" title="Use remote frame" data-editor="frame">
+                    <button class="btn" type="button" data-toggle="button">
+                      <span class="icon-stack">
+                        <i class="icon-cloud icon-stack-base icon-muted"></i>
+                        <i class="icon-crop"></i>
+                      </span>
+                    </button>
+                    <input class="span2" type="text" placeholder="Frame URL" />
+                  </div>
+                </div>
+              </h3>
+              <textarea id="frame" class="compressed process span6 codemirror-input"
+              placeholder="Enter your JSON-LD frame here..." rows="10">{}</textarea>
+            </div>
+          </div>
+        </div>
+        <div id="markup-errors" class="hide alert alert-error"></div>
+        <div id="param-errors" class="hide alert alert-error"></div>
+        <div id="using-context-map" class="hide alert alert-note">
+          <p>NOTE: A remote context that is not known to be fully working yet was detected in your input.
+            If you wish, you can use an alternative context created by the JSON-LD community to
+            process your document nevertheless.</p>
+          <label class="checkbox">
+            <input type="checkbox" id="use-context-map" value="1"> Use development context
+          </label>
+          <table class="table table-condensed">
+            <thead>
+              <tr>
+                <td>Original</td>
+                <td>Development</td>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- dynamic rows -->
+            </tbody>
+          </table>
+        </div>
+        <div id="processing-errors" class="hide alert alert-error"></div>
+
+        <div id="output-container">
+          <ul id="tabs" class="nav nav-tabs">
+            <li class="active">
+              <a id="tab-expanded" href="#pane-expanded" data-toggle="tab" name="tab-expanded">
+                <i class="icon-resize-full"></i>
+                <span>Expanded</span>
+              </a>
+            </li>
+            <li>
+              <a id="tab-compacted" href="#pane-compacted" data-toggle="tab" name="tab-compacted">
+                <i class="icon-resize-small"></i>
+                <span>Compacted</span>
+              </a>
+            </li>
+            <li>
+              <a id="tab-flattened" href="#pane-flattened" data-toggle="tab" name="tab-flattened">
+                <i class="icon-reorder"></i>
+                <span>Flattened</span>
+              </a>
+            </li>
+            <li>
+              <a id="tab-framed" href="#pane-framed" data-toggle="tab" name="tab-framed">
+                <i class="icon-crop"></i>
+                <span>Framed</span>
+              </a>
+            </li>
+            <li>
+              <a id="tab-nquads" href="#pane-nquads" data-toggle="tab" name="tab-nquads">
+                <i class="rdf-icon-rdf"></i>
+                <span>N-Quads</span>
+              </a>
+            </li>
+            <li>
+              <a id="tab-normalized" href="#pane-normalized" data-toggle="tab" name="tab-normalized">
+                <i class="icon-archive"></i>
+                <span>Normalized</span>
+              </a>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <div id="pane-expanded" class="tab-pane active">
+              <textarea id="expanded" class="codemirror-output"></textarea>
+            </div>
+            <div id="pane-compacted" class="tab-pane">
+              <textarea id="compacted" class="codemirror-output"></textarea>
+            </div>
+            <div id="pane-flattened" class="tab-pane">
+              <textarea id="flattened" class="codemirror-output"></textarea>
+            </div>
+            <div id="pane-framed" class="tab-pane">
+              <textarea id="framed" class="codemirror-output"></textarea>
+            </div>
+            <div id="pane-nquads" class="tab-pane">
+              <textarea id="nquads" class="codemirror-output"></textarea>
+            </div>
+            <div id="pane-normalized" class="tab-pane">
+              <textarea id="normalized" class="codemirror-output"></textarea>
+            </div>
+          </div><!-- /.tab-content -->
+        </div>
+
+        <hr/>
+      </div> <!-- /.container -->
+    </div> <!-- /.loading -->
+
+    <div class="container">
+      <div id="footer">
+        <p id="copyright">
+         Website content released under a <a href="http://creativecommons.org/about/cc0">Creative Commons CC0 Public Domain Dedication</a> except where an alternate is specified.
+         Part of the <a href="http://payswarm.com/">PaySwarm</a> standardization initiative.
+        </p>
+      </div>
+    </div>
+
+    <!-- sccdn scripts -->
+    <script src="//cdn.jsdelivr.net/g/jquery@1.11.0,es6-promise@1.0.0,bootstrap@2.3.2,codemirror@3.22.0(codemirror.min.js+addon/lint/lint.js+addon/edit/matchbrackets.js+addon/edit/closebrackets.js+addon/display/placeholder.js+addon/hint/show-hint.js+mode/ntriples/ntriples.js+mode/javascript/javascript.js)"></script>
+
+    <!-- local scripts -->
+    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jsonld/0.3.20/jsonld.js"></script> -->
+    <script src="playground/jsonld.js"></script>
+    <script src="playground/jsonlint.js"></script>
+    <script src="playground/tv4.min.js"></script>
+    <script src="playground/json-schema-lint.js"></script>
+    <script src="playground/jsonld-hint.js"></script>
+    <script src="playground/playground.js"></script>
+    <script src="playground/playground-examples.js"></script>
 
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -33,293 +316,16 @@
       ga('create', 'UA-42886053-1', 'json-ld.org');
       ga('send', 'pageview');
     </script>
-  </head>
 
-  <body>
-    <div class="navbar navbar-static-top">
-      <div class="navbar-inner">
-        <div class="row-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand active" href="#"><img src="images/json-ld-data-24.png" alt="JSON-LD logo"> JSON-LD</a>
-          <div class="nav-collapse">
-          <ul class="nav">
-            <li>
-              <a href="playground/"><span class="icon-beer"></span> Playground</a>
-            </li>
-            <li>
-              <a href="learn.html"><span class="icon-book"></span> Documentation</a>
-            </li>
-            <!-- <li><a href="#"><span class="icon-beaker"></span> Developers</a></li> -->
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <span class="icon-folder-open"></span> Specifications <b class="caret"></b>
-              </a>
-              <ul class="dropdown-menu">
-                <li class="nav-header"><strong>Latest</strong></li>
-                <li><a href="spec/latest/json-ld/">Syntax</a></li>
-                <li><a href="spec/latest/json-ld-api/">API</a></li>
-                <li><a href="spec/latest/json-ld-framing/">Framing</a></li>
-                <li><a href="spec/latest/rdf-dataset-normalization/">Normalization</a></li>
-                <li class="divider"></li>
-                <li class="nav-header"><strong>Previous Drafts</strong></li>
-                <li><a href="spec#syntax">Syntax</a></li>
-                <li><a href="spec#api">API</a></li>
-                <li><a href="spec#framing">Framing</a></li>
-                <li><a href="spec#normalization">Normalization</a></li>
-              </ul>
-            </li>
-            <li><a href="images/"><span class="icon-picture"></span> Branding</a></li>
-            </ul>
-          </div>
-          <!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
+    <script type="text/javascript">
+      $('#context-div').hide();
+      $('#frame-div').hide();
+      $('#markup,#context,#frame').bind('keyup', function() {
+        $('.btn-group > .btn').each(function () {
+          $(this).removeClass('active');
+        });
+      });
+    </script>
 
-    <div class="hero-unit">
-      <h1>JSON for Linking Data</h1>
-      <br>
-      <p class="tagline">Data is messy and disconnected. JSON-LD organizes and
-       connects it, creating a better Web.</p>
-    </div>
-
-    <div class="container">
-      <div class="row">
-        <div class="span3">
-          <h2><span class="icon-exchange"></span> Linked Data </h2>
-          <p class="text-justify">
-            <a href="http://en.wikipedia.org/wiki/Linked_data">Linked Data</a>
-            empowers people that publish and use information on the Web. It is a
-            way to create a network of standards-based, machine-readable data across
-            Web sites. It allows an application to start at one piece of Linked Data,
-            and follow embedded links to other pieces of Linked Data that are hosted
-            on different sites across the Web.
-          </p>
-        </div>
-        <!-- End span -->
-
-        <div class="span6">
-          <h2 style="text-align: center;">A Simple Example</h2>
-          <pre>{
-  "<span style="color: rgb(255, 122, 0);">@context</span>": "<a href="http://json-ld.org/contexts/person.jsonld">http://json-ld.org/contexts/person.jsonld</a>",
-  "<span style="color: rgb(255, 122, 0);">@id</span>": "<a href="http://dbpedia.org/resource/John_Lennon">http://dbpedia.org/resource/John_Lennon</a>",
-  "<span style="color: rgb(255, 122, 0);">name</span>": "<span style="color: rgb(0, 148, 0);">John Lennon</span>",
-  "<span style="color: rgb(255, 122, 0);">born</span>": "<span style="color: rgb(0, 0, 175);">1940-10-09</span>",
-  "<span style="color: rgb(255, 122, 0);">spouse</span>": "<a href="http://dbpedia.org/resource/Cynthia_Lennon">http://dbpedia.org/resource/Cynthia_Lennon</a>"
-}</pre>
-        </div>
-        <!-- End span -->
-
-        <div class="span3">
-          <h2>
-            <span><img src="images/json-ld-data-32.png" alt="JSON-LD logo"></span> JSON-LD
-          </h2>
-          <p class="text-justify">JSON-LD is a lightweight Linked Data format. It
-            is easy for humans to read and write. It is based on the already
-            successful JSON format and provides a way to help JSON data interoperate
-            at Web-scale. JSON-LD is an ideal data format for programming
-            environments, REST Web services, and unstructured databases such as
-            CouchDB and MongoDB.
-          </p>
-        </div>
-        <!-- End span -->
-      </div>
-    </div>
-
-    <br/><br/>
-
-    <div class="hero-unit">
-      <h2 style="text-align:center;"><span class="icon-beer icon-large"></span> Playground</h2>
-      <div class="container">
-        <div class="row">
-          <p class="text-justify offset2 span8">
-            The <strong>JSON-LD Playground</strong> is a web-based JSON-LD viewer and debugger.
-            If you are interested in learning JSON-LD, this tool will be of great help
-            to you. Developers may also use the tool to debug, visualize, and share
-            their JSON-LD markup.
-          </p>
-          <a class="btn" href="./playground/">Launch the JSON-LD Playground</a>
-        </div>
-      </div>
-      <!-- End span -->
-    </div>
-
-    <div class="container">
-      <div id="developers" class="row">
-        <h1 class="span12" style="text-align: center;"> <span class="icon-cog"></span> Developers</h1>
-      </div>
-      <div id="developers-description" class="row">
-        <p class="offset2 span8" style="text-align: center;">JSON-LD is available in
-          a number of popular programming environments. Each implementation of JSON-LD
-          listed below is fully conforming to the offical JSON-LD specifications.
-        </p>
-      </div>
-
-      <div class="row">
-        <div class="span2">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>Javascript</h3></li>
-              <li><a href="https://github.com/digitalbazaar/jsonld.js">jsonld.js</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="span2">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>Python</h3></li>
-              <li><a href="https://github.com/digitalbazaar/pyld">PyLD</a></li>
-              <li><a href="https://github.com/RDFLib/rdflib-jsonld">RDFLib-jsonld</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="span2">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>PHP</h3></li>
-              <li><a href="https://github.com/digitalbazaar/php-json-ld">php-json-ld</a></li>
-              <li><a href="http://m.lanthi.com/json-ld">JsonLD</a></li>
-            </ul>
-          </div>
-        </div>
-
-
-        <div class="span2">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>Ruby</h3></li>
-              <li><a href="https://github.com/ruby-rdf/json-ld/">JSON-LD for
-                RDF.rb</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="span2">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>Java</h3></li>
-              <li><a href="https://github.com/jsonld-java/jsonld-java">JSON-LD
-              Java</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="span2">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>C#</h3></li>
-              <li><a href="https://github.com/NuGet/json-ld.net">json-ld.net</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div id="tests-description" class="row">
-        <p class="offset2 span8" style="text-align: center;">
-          The <a href="test-suite/">JSON-LD Test Suite</a> is useful for validating JSON-LD Processors.
-        </p>
-        <p class="offset3 span6" style="text-align: center;">
-          Conformance of various processors is documented in the <a href="test-suite/reports/">implementation report</a>.
-        </p>
-      </div>
-      <hr>
-    </div>
-    <!-- /container -->
-    <div class="container">
-      <div id="collaborating" class="row">
-        <h1 class="span12" style="text-align: center;">
-        <span class="icon-group"></span> Getting Help / Collaborating</h1>
-      </div>
-
-      <div id="collaborating-description" class="row">
-        <p class="offset2 span8" style="text-align: center;">
-        JSON-LD is being developed by the W3C <a
-        href="http://www.w3.org/community/json-ld/">JSON-LD Community Group</a>.
-        It is a <a href="http://www.w3.org/TR/json-ld/">W3C Recommendation</a>
-        as of 16 January 2014. Participation is open
-        to the public. There is a <a href="http://github.com/json-ld">JSON-LD
-        Github repository</a>. If you need immediate help, we have a <a
-        href="http://webchat.freenode.net/?channels=#json-ld">#json-ld</a> IRC
-        support channel on freenode.net. There is also a <a
-        href="http://lists.w3.org/Archives/Public/public-linked-json/">JSON-LD
-        mailing list</a>. All weekly meetings are open to the public, and are <a
-        href="http://json-ld.org/minutes/">minuted, recorded, and archived</a>. Listed below are all of the
-        communication tools that the community uses on a weekly basis.</p>
-      </div>
-
-      <div class="row">
-        <div class="span3">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>Code</h3></li>
-              <li><a href="http://github.com/json-ld/json-ld.org">json-ld on Github</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="span3">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>Meetings</h3></li>
-              <li><a href="minutes/">Text and audio minutes</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="span3">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>Mailing List</h3></li>
-              <li><a href="http://lists.w3.org/Archives/Public/public-linked-json/">public-linked-json@w3.org</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="span3">
-          <div class="well" style="padding: 8px 0;">
-            <ul class="nav nav-list">
-              <li class="nav-header"><h3>IRC</h3></li>
-              <li><a href="http://webchat.freenode.net/?channels=#json-ld">#json-ld on Freenode</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- /container -->
-    <hr>
-    <div class="container">
-      <div id="learn-more" class="row">
-        <h1 class="span12" style="text-align: center;">
-        <span class="icon-book"></span> Learn More...</h1>
-      </div>
-
-      <div id="learn-more-description" class="row">
-        <p class="offset2 span8" style="text-align: center;">
-        This website contains a number of curated
-        video, presentations, tutorials, and documentation about JSON-LD. Assuming you
-        are familiar with JSON, these training materials will help you quickly
-        put the power of JSON-LD into your web development efforts.<br><br>
-        <a class="btn" href="./learn.html">Learn more about JSON-LD</a>
-        </p>
-      </div>
-      <!-- End Row -->
-      <hr>
-      <div id="footer">
-        <p id="copyright">
-        Website content released under a <a href="http://creativecommons.org/about/cc0">Creative Commons CC0 Public Domain Dedication</a> except where an alternate is specified.
-        Part of the <a href="http://payswarm.com/">PaySwarm</a> standardization initiative.
-        </p>
-      </div>
-    </div>
-    <!-- /container -->
-
-    <!-- Script tags -->
-    <script type="text/javascript" src="static/js/bootstrap/bootstrap.js"></script>
   </body>
 </html>
